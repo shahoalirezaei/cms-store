@@ -1,0 +1,26 @@
+.table-title {
+    position: relative;
+    margin: 23px 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.table-title:after {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 18%;
+    height: 5px;
+    border-radius: 7px 0 0 0 ;
+    content: '';
+    background-color: gray;
+}
+.table-title::before {
+    position: absolute;
+    top: 35px;
+    right: 0;
+    width: 100%;
+    height: 1px;
+    /* border-radius: 2px; */
+    content: '';
+    background-color: gray;
+}

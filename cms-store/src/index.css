@@ -1,0 +1,110 @@
+@font-face {
+  font-family: Inter;
+  src: url("./fonts/Inter-Bold.woff");
+}
+
+*,
+html,
+body {
+  font-family: Inter;
+  box-sizing: border-box;
+}
+body {
+  background-color: #f0f0f0;
+  color: #242424;
+}
+@import "tailwindcss";
+
+@layer base {
+  .modal-parent {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+    z-index: 11;
+    opacity: 1;
+    visibility: visible;
+    transition: 0.4s;
+    overflow-y: scroll;
+  }
+}
+
+@layer components {
+  .btn-blue {
+    @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-2 focus:ring-blue-200 font-medium rounded-lg text-sm px-2.5 py-2.5;
+  }
+  .search-btn {
+    @apply font-normal rounded-xl text-sm h-[38px] w-20 md:w-[135px] px-5 py-1;
+  }
+  .edit-btn {
+    @apply flex items-center justify-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .delete-btn {
+    @apply flex items-center justify-center gap-1 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .details-btn {
+    @apply flex items-center justify-center gap-1 bg-gray-300 hover:bg-gray-400 text-black px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .seen-btn {
+    @apply flex items-center justify-center gap-1 bg-teal-500 hover:bg-teal-600 text-white px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .confirm-btn {
+    @apply flex items-center justify-center gap-1 bg-green-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .replay-btn {
+    @apply flex items-center justify-center gap-1 bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded text-xs xl:text-sm;
+  }
+  .table-title {
+    @apply text-xl sm:text-2xl md:text-3xl before:hidden after:hidden md:after:block md:before:block;
+  }
+
+  .table-title {
+    position: relative;
+    margin: 28px 0;
+    /* margin: 23px 0; */
+  }
+  .table-title:after {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    width: 18%;
+    height: 5px;
+    border-radius: 7px 0 0 0;
+    content: "";
+    background-color: gray;
+  }
+  .table-title::before {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    height: 0.5px;
+    /* border-radius: 2px; */
+    content: "";
+    background-color: gray;
+  }
+}
+
+@layer utilities {
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 4px;
+    height: 10px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background-color: #888; /* رنگ thumb */
+    border-radius: 8px;
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* رنگ track */
+  }
+}
