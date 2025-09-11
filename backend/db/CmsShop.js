@@ -1,27 +1,47 @@
-const mysql = require("mysql");
-const util = require("util");
+// backend/db/CmsShop.js
+const mysql = require('mysql2/promise');
 
-const CmsShopDB = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "cms_store",
+const {
+  DB_HOST = '127.0.0.1',
+  DB_PORT = 3306,
+  DB_USER = 'root',
+  DB_PASS = '',
+  DB_NAME = 'cms_store'
+} = process.env;
+
+const pool = mysql.createPool({
+  host: DB_HOST,
+  port: DB_PORT,
+  user: DB_USER,
+  password: DB_PASS,
+  database: DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// تبدیل متد query به Promise-based
-CmsShopDB.query = util.promisify(CmsShopDB.query);
+async function _query(sql, params = []) {
+  const [rows] = await pool.query(sql, params);
+  return rows;
+}
 
-module.exports = CmsShopDB;
+function query(sql, params, cb) {
+  if (typeof params === 'function') {
+    cb = params;
+    params = [];
+  }
 
+  if (typeof cb === 'function') {
+    _query(sql, params)
+      .then(rows => cb(null, rows))
+      .catch(err => cb(err));
+    return;
+  } else {
+    return _query(sql, params);
+  }
+}
 
-
-// const mysql = require("mysql");
-
-// const CmsShopDB = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "cms_store",
-// });
-
-// module.exports = CmsShopDB;
+module.exports = {
+  pool,
+  query
+};
