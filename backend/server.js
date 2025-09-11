@@ -1,10 +1,13 @@
+// backend/server.js
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+
+// DB wrapper (backend/db/CmsShop.js)
 const CmsShopDB = require("./db/CmsShop");
 
-// Import routers
+// routers 
 const productsRouter = require("./routes/productsRoutes");
 const commentsRouter = require("./routes/commentsRoutes");
 const usersRouter = require("./routes/usersRoutes");
@@ -16,19 +19,16 @@ const categoriesRouter = require("./routes/categoriesRouter");
 const authRouter = require("./routes/auth");
 const setupRouter = require("./routes/setupDemo");
 
-// اتصال به دیتابیس CmsShopDB
-// const CmsShopDB = require("./db/CmsShopDB"); // همان فایلی که اتصال را ایجاد می‌کند
-
 const app = express();
 
-app.use(cors());
+const FRONTEND_URL = process.env.FRONTEND_URL || "*";
+
+app.use(cors({ origin: FRONTEND_URL }));
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// اگر بخواهی، می‌توانی این اتصال را در app ذخیره کنی:
-app.set("db", CmsShopDB);
-
-// مسیرهای API
+// mount routes
 app.use("/api/products", productsRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/users", usersRouter);
@@ -40,4 +40,8 @@ app.use("/api/setup", setupRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admins", adminsRouter);
 
-app.listen(8001, () => console.log("Server running on port 8001"));
+// healthcheck
+app.get("/", (req, res) => res.json({ ok: true, message: "Cms Shop API" }));
+
+// Export the app so Vercel can run it as a serverless function
+module.exports = app;
