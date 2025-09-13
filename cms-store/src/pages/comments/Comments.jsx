@@ -5,14 +5,7 @@ import DeleteModal from "../../components/deleteModal/DeleteModal";
 import EditModal from "../../components/editModal/EditModal";
 import { toast } from "react-toastify";
 import { useAuthFetch } from "../../hooks/useAuthFetch";
-import {
-  FaEdit,
-  FaTrash,
-  FaReply,
-  FaCheck,
-  FaEye,
-  FaTimes,
-} from "react-icons/fa";
+import { FaEdit, FaTrash, FaReply, FaCheck, FaEye, FaTimes } from "react-icons/fa";
 
 function Comments() {
   const { authFetch } = useAuthFetch();
@@ -23,13 +16,13 @@ function Comments() {
   const [isShowAcceptModal, setIsShowAcceptModal] = useState(false);
   const [isShowRejectModal, setIsShowRejectModal] = useState(false);
   const [mainCommentInfo, setMainCommentInfo] = useState({});
-  const [newCommentBody, setNewCommentBody] = useState({});
+  const [newCommentBody, setNewCommentBody] = useState("");
   const [commentID, setCommentID] = useState(null);
-  const [sortType, setSortType] = useState(null);
+  const [sortType, setSortType] = useState("latest");
 
-  // Sorted comment by usememo
+  // Sorted comment by useMemo
   const sortedComments = useMemo(() => {
-    const sorted = [...allComments];
+    const sorted = Array.isArray(allComments) ? [...allComments] : [];
     switch (sortType) {
       case "latest":
         return sorted.sort(
@@ -55,112 +48,65 @@ function Comments() {
   }, []);
 
   const getAllComments = async () => {
-    const { error, data } = await authFetch(
-      "api/comments"
-    );
+    const { error, data } = await authFetch("/api/comments");
     if (error) {
       console.error("Fetch error:", error);
+      setAllComments([]);
     } else {
-      setAllComments(data);
+      console.log("Fetched comments:", data);
+      setAllComments(Array.isArray(data) ? data : []);
     }
   };
 
-  const closeDetailsModal = () => {
-    setIsShowDetailsModal(false);
-  };
+  const closeDetailsModal = () => setIsShowDetailsModal(false);
 
   const updateCommentInfo = async (event) => {
     event.preventDefault();
     if (!newCommentBody.trim()) {
-      toast.error("Comment text cannot be empty", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error("Comment text cannot be empty", { position: "top-right", autoClose: 3000 });
       return;
     }
 
-    const { error, data } = await authFetch(
-      `api/comments/${commentID}`,
-      "PUT",
-      { body: newCommentBody }
-    );
+    const { error } = await authFetch(`/api/comments/${commentID}`, "PUT", { body: newCommentBody });
     if (error) {
-      console.log(error);
-
-      toast.error(`Error: Comment not updated`, {
-        position: "top-right",
-        autoClose: 5000,
-      });
+      toast.error("Error: Comment not updated", { position: "top-right", autoClose: 5000 });
     } else {
-      toast.success("Comment updated successfully", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.success("Comment updated successfully", { position: "top-right", autoClose: 3000 });
       getAllComments();
     }
     setIsShowEditModal(false);
   };
 
   const deleteModalSubmitAction = async () => {
-    const { error, data } = await authFetch(
-      `api/comments/${commentID}`,
-      "DELETE"
-    );
+    const { error } = await authFetch(`/api/comments/${commentID}`, "DELETE");
     if (error) {
-      toast.error(`Error: Comment cannot delete`, {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.error("Error: Comment cannot delete", { position: "top-right", autoClose: 3000 });
     } else {
+      toast.success("Comment deleted successfully", { position: "top-right", autoClose: 3000 });
       getAllComments();
-      toast.success("Comment deleted successfully", {
-        position: "top-right",
-        autoClose: 3000,
-      });
     }
     setIsShowDeleteModal(false);
   };
 
   const acceptModalSubmitAction = async () => {
-    const { error, data } = await authFetch(
-      `api/comments/accept/${commentID}`,
-      "POST"
-    );
+    const { error } = await authFetch(`/api/comments/accept/${commentID}`, "POST");
     if (error) {
-      const errorMessage = error.message || "server error";
-      toast.error(`Error: Comment cannot confirm`, {
-        position: "bottom-left",
-        autoClose: 3000,
-      });
+      toast.error("Error: Comment cannot confirm", { position: "bottom-left", autoClose: 3000 });
     } else {
+      toast.success("Comment confirmed successfully", { position: "bottom-left", autoClose: 3000 });
       getAllComments();
-      toast.success("Comment confirm successfully", {
-        position: "bottom-left",
-        autoClose: 3000,
-      });
     }
-
     setIsShowAcceptModal(false);
   };
-  const rejectModalSubmitAction = async () => {
-    const { error, data } = await authFetch(
-      `api/comments/reject/${commentID}`,
-      "POST"
-    );
-    if (error) {
-      const errorMessage = error.message || "server error";
-      toast.error(`Error: Comment cannot reject`, {
-        position: "bottom-left",
-        autoClose: 3000,
-      });
-    } else {
-      getAllComments();
-      toast.success("Comment reject successfully", {
-        position: "bottom-left",
-        autoClose: 3000,
-      });
-    }
 
+  const rejectModalSubmitAction = async () => {
+    const { error } = await authFetch(`/api/comments/reject/${commentID}`, "POST");
+    if (error) {
+      toast.error("Error: Comment cannot reject", { position: "bottom-left", autoClose: 3000 });
+    } else {
+      toast.success("Comment rejected successfully", { position: "bottom-left", autoClose: 3000 });
+      getAllComments();
+    }
     setIsShowRejectModal(false);
   };
 
@@ -170,6 +116,7 @@ function Comments() {
         <h4 className="text-2xl font-medium my-4">Comment list</h4>
         <select
           className="border px-2 py-1 rounded mb-4 outline-gray-500 text-zinc-800 text-sm md:text-base"
+          value={sortType}
           onChange={(e) => setSortType(e.target.value)}
         >
           <option value="latest">Latest</option>
@@ -181,24 +128,12 @@ function Comments() {
         <table className="table-fixed w-full bg-white rounded-2xl">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
-                Customer
-              </th>
-              <th className="px-4 py-2 text-center hidden sm:table-cell text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3 sm:w-1/5">
-                product
-              </th>
-              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
-                Comment
-              </th>
-              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
-                Date
-              </th>
-              <th className="px-4 py-2 hidden sm:table-cell text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
-                Hour
-              </th>
-              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5 lg:w-4/6 xl:w-1/2">
-                Action
-              </th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Customer</th>
+              <th className="px-4 py-2 text-center hidden sm:table-cell text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3 sm:w-1/5">Product</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Comment</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Date</th>
+              <th className="px-4 py-2 hidden sm:table-cell text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">Hour</th>
+              <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5 lg:w-4/6 xl:w-1/2">Action</th>
             </tr>
           </thead>
 
@@ -206,13 +141,9 @@ function Comments() {
             {sortedComments.length ? (
               sortedComments.map((comment) => (
                 <tr key={comment.id} className="hover:bg-gray-50">
-                  <td className="text-center px-4 py-2 text-gray-800 whitespace-nowrap text-sm sm:text-base">
-                    {comment.userID}
-                  </td>
+                  <td className="text-center px-4 py-2 text-gray-800 whitespace-nowrap text-sm sm:text-base">{comment.userID}</td>
                   <td className="text-center hidden sm:table-cell px-4 py-2">
-                    <p className="flex flex-wrap text-xs sm:text-sm md:text-xs lg:text-sm line-clamp-1 max-w-[150px]">
-                      {comment.productID}
-                    </p>
+                    <p className="flex flex-wrap text-xs sm:text-sm md:text-xs lg:text-sm line-clamp-1 max-w-[150px]">{comment.productID}</p>
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex justify-center flex-col">
@@ -229,12 +160,8 @@ function Comments() {
                       </button>
                     </div>
                   </td>
-                  <td className="text-center px-4 py-2 text-gray-800 text-xs sm:text-sm">
-                    {comment.date}
-                  </td>
-                  <td className="text-center hidden sm:table-cell px-4 py-2 text-gray-800 text-xs sm:text-sm">
-                    {comment.hour}
-                  </td>
+                  <td className="text-center px-4 py-2 text-gray-800 text-xs sm:text-sm">{comment.date}</td>
+                  <td className="text-center hidden sm:table-cell px-4 py-2 text-gray-800 text-xs sm:text-sm">{comment.hour}</td>
                   <td className="px-4 py-2">
                     <div className="flex flex-col sm:flex-row flex-wrap gap-2">
                       <button
@@ -295,29 +222,28 @@ function Comments() {
           </tbody>
         </table>
       </div>
+
       {isShowDetailsModal && (
         <DetailsModal onHide={closeDetailsModal}>
           <p className="p-5 text-sm md:text-base mb-7">{mainCommentInfo}</p>
-          <button className="btn-blue" onClick={closeDetailsModal}>
-            Close
-          </button>
+          <button className="btn-blue" onClick={closeDetailsModal}>Close</button>
         </DetailsModal>
       )}
+
       {isShowEditModal && (
         <EditModal
           onClose={() => setIsShowEditModal(false)}
-          onSubmit={(e) => updateCommentInfo(e)}
+          onSubmit={updateCommentInfo}
           title="Please edit the Comment"
         >
           <textarea
-            className="text-sm overflow-y-scroll min-h-24 w-full p-2 outline-0  border-t-[0.7px] border-t-gray-500"
+            className="text-sm overflow-y-scroll min-h-24 w-full p-2 outline-0 border-t-[0.7px] border-t-gray-500"
             value={newCommentBody}
             onChange={(e) => setNewCommentBody(e.target.value)}
-          >
-            {newCommentBody}
-          </textarea>
+          />
         </EditModal>
       )}
+
       {isShowDeleteModal && (
         <DeleteModal
           cancelAction={() => setIsShowDeleteModal(false)}
@@ -325,6 +251,7 @@ function Comments() {
           title="Are you sure for delete this comment ?"
         />
       )}
+
       {isShowAcceptModal && (
         <DeleteModal
           cancelAction={() => setIsShowAcceptModal(false)}
@@ -332,6 +259,7 @@ function Comments() {
           title="Are you sure for confirm this comment ?"
         />
       )}
+
       {isShowRejectModal && (
         <DeleteModal
           cancelAction={() => setIsShowRejectModal(false)}
