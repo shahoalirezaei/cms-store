@@ -56,7 +56,7 @@ function Comments() {
 
   const getAllComments = async () => {
     const { error, data } = await authFetch(
-      "/api/comments"
+      "api/comments"
     );
     if (error) {
       console.error("Fetch error:", error);
