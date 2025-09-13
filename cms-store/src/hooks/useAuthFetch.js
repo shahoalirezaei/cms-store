@@ -4,7 +4,12 @@ import LoadingContext from "../context/LoadingContext";
 
 export const useAuthFetch = () => {
   const { setLoading } = useContext(LoadingContext);
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8001";
+  const API_BASE = import.meta.env.VITE_API_URL;
+
+  if (!API_BASE) {
+  console.warn(
+    "⚠️ VITE_API_URL is not set! Make sure to configure Environment Variables in Vercel."
+  );
 
   const authFetch = async (url, method = "GET", body = null) => {
     setLoading(true);
