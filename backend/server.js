@@ -43,5 +43,17 @@ app.use("/api/admins", adminsRouter);
 // healthcheck
 app.get("/", (req, res) => res.json({ ok: true, message: "Cms Shop API" }));
 
+
+// test connection route
+app.get("/api/test-db", async (req, res) => {
+  try {
+    const rows = await CmsShopDB.query("SELECT 1 + 1 AS result");
+    res.json({ success: true, result: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 // Export the app so Vercel can run it as a serverless function
 module.exports = app;
