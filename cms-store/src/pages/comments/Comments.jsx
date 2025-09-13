@@ -56,7 +56,7 @@ function Comments() {
 
   const getAllComments = async () => {
     const { error, data } = await authFetch(
-      "http://localhost:8001/api/comments"
+      "/api/comments"
     );
     if (error) {
       console.error("Fetch error:", error);
@@ -80,7 +80,7 @@ function Comments() {
     }
 
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/comments/${commentID}`,
+      `api/comments/${commentID}`,
       "PUT",
       { body: newCommentBody }
     );
@@ -103,7 +103,7 @@ function Comments() {
 
   const deleteModalSubmitAction = async () => {
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/comments/${commentID}`,
+      `api/comments/${commentID}`,
       "DELETE"
     );
     if (error) {
@@ -123,7 +123,7 @@ function Comments() {
 
   const acceptModalSubmitAction = async () => {
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/comments/accept/${commentID}`,
+      `api/comments/accept/${commentID}`,
       "POST"
     );
     if (error) {
@@ -144,7 +144,7 @@ function Comments() {
   };
   const rejectModalSubmitAction = async () => {
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/comments/reject/${commentID}`,
+      `api/comments/reject/${commentID}`,
       "POST"
     );
     if (error) {
