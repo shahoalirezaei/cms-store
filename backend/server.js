@@ -21,9 +21,13 @@ const setupRouter = require("./routes/setupDemo");
 
 const app = express();
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "*";
+// FRONTEND_URL دقیقا دامنه فرانت روی Vercel باشه
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-app.use(cors({ origin: FRONTEND_URL }));
+app.use(cors({
+  origin: FRONTEND_URL,  // فقط اجازه به دامنه فرانت
+  credentials: true      // مهم: اجازه ارسال هدر Authorization
+}));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
