@@ -1,5 +1,6 @@
 // backend/db/CmsShop.js
 const mysql = require('mysql2/promise');
+const fs = require("fs")
 
 // دریافت متغیرهای محیطی
 const {
@@ -21,7 +22,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   ssl: {
-    rejectUnauthorized: true // ضروری برای Aiven
+    ca: fs.readFileSync(__dirname + "/ca.pem")
   }
 });
 
