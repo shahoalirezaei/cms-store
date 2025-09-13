@@ -1,45 +1,45 @@
 // backend/db/CmsShop.js
-const mysql = require('mysql2/promise');
-const fs = require("fs")
+const mysql = require("mysql2/promise");
+const fs = require("fs");
 
 // دریافت متغیرهای محیطی
 const {
-  DB_HOST = '127.0.0.1',
-  DB_PORT = 3306,
-  DB_USER = 'root',
-  DB_PASSWORD = '',
-  DB_NAME = 'cms_store'
+  DB_HOST,
+  DB_PORT,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME
 } = process.env;
 
-// ایجاد pool با SSL برای اتصال به Aiven
+// ایجاد pool با SSL فقط اگر ca.pem موجود باشه
+const sslConfig = fs.existsSync(__dirname + "/ca.pem")
+  ? { ca: fs.readFileSync(__dirname + "/ca.pem") }
+  : null;
+
 const pool = mysql.createPool({
   host: DB_HOST,
   port: DB_PORT,
   user: DB_USER,
-  password: DB_PASSWORD,  // تغییر به DB_PASSWORD مطابق Vercel
+  password: DB_PASSWORD,
   database: DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: {
-    ca: fs.readFileSync(__dirname + "/ca.pem")
-  }
+  ssl: sslConfig
 });
 
-// تابع اصلی برای اجرای query
 async function _query(sql, params = []) {
   const [rows] = await pool.query(sql, params);
   return rows;
 }
 
-// تابع query با callback یا promise
 function query(sql, params, cb) {
-  if (typeof params === 'function') {
+  if (typeof params === "function") {
     cb = params;
     params = [];
   }
 
-  if (typeof cb === 'function') {
+  if (typeof cb === "function") {
     _query(sql, params)
       .then(rows => cb(null, rows))
       .catch(err => cb(err));
@@ -49,7 +49,4 @@ function query(sql, params, cb) {
   }
 }
 
-module.exports = {
-  pool,
-  query
-};
+module.exports = { pool, query };

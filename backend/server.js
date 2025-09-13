@@ -4,10 +4,10 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-// DB wrapper (backend/db/CmsShop.js)
+// DB wrapper
 const CmsShopDB = require("./db/CmsShop");
 
-// routers 
+// Routers
 const productsRouter = require("./routes/productsRoutes");
 const commentsRouter = require("./routes/commentsRoutes");
 const usersRouter = require("./routes/usersRoutes");
@@ -21,14 +21,19 @@ const setupRouter = require("./routes/setupDemo");
 
 const app = express();
 
+// فقط دامنه فرانت درست CORS داده بشه
 const FRONTEND_URL = process.env.FRONTEND_URL || "*";
 
-app.use(cors({ origin: FRONTEND_URL }));
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true // اجازه ارسال Authorization header
+}));
+
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// mount routes
+// Mount routes
 app.use("/api/products", productsRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/users", usersRouter);
@@ -40,11 +45,10 @@ app.use("/api/setup", setupRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admins", adminsRouter);
 
-// healthcheck
+// Healthcheck
 app.get("/", (req, res) => res.json({ ok: true, message: "Cms Shop API" }));
 
-
-// test connection route
+// Test DB connection
 app.get("/api/test-db", async (req, res) => {
   try {
     const rows = await CmsShopDB.query("SELECT 1 + 1 AS result");
@@ -54,6 +58,4 @@ app.get("/api/test-db", async (req, res) => {
   }
 });
 
-
-// Export the app so Vercel can run it as a serverless function
 module.exports = app;
