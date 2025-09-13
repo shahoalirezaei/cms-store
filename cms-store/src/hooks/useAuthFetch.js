@@ -22,7 +22,7 @@ export const useAuthFetch = () => {
 
     let fullUrl = url;
     if (!/^https?:\/\//i.test(url)) {
-      fullUrl = API_BASE + (url.startsWith("") ? url : `/${url}`);
+      fullUrl = API_BASE + (url.startsWith("/") ? url : `/${url}`);
     } else {
       fullUrl = url.replace("http://localhost:8001", API_BASE);
     }
