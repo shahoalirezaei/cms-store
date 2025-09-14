@@ -51,7 +51,7 @@ function Offs() {
     console.log(offID, isActive);
 
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/offs/active-off/${offID}/${isActiveNumber}`,
+      `/api/offs/active-off/${offID}/${isActiveNumber}`,
       "PUT"
     );
     if (error) {
@@ -74,7 +74,7 @@ function Offs() {
   const submitActionDeleteModal = async () => {
     console.log("deleted");
     try {
-      await fetch(`http://localhost:8001/api/offs/${offID}`, {
+      await fetch(`api/offs/${offID}`, {
         method: "DELETE",
       })
         .then(async (res) => {
