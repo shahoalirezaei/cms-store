@@ -1,25 +1,42 @@
 const express = require("express");
 const CmsShopDB = require("../db/CmsShop");
-const { authenticate, authorizeRole } = require("../middlewares/authMiddleware");
+const {
+  authenticate,
+  authorizeRole,
+} = require("../middlewares/authMiddleware");
 
 const commentsRouter = express.Router();
 
 // ---------------------- GET all comments (public) ----------------------
-commentsRouter.get("/", (req, res) => {
-  const query = `
-    SELECT Comments.id, Comments.isAccept, Comments.body, Comments.date, Comments.hour,
-           Users.firstname AS userID, Products.title AS productID
-    FROM Comments
-    INNER JOIN Users ON Users.id = Comments.userID
-    INNER JOIN Products ON Products.id = Comments.productID
-  `;
+// commentsRouter.get("/", (req, res) => {
+//   const query = `
+//     SELECT Comments.id, Comments.isAccept, Comments.body, Comments.date, Comments.hour,
+//            Users.firstname AS userID, Products.title AS productID
+//     FROM Comments
+//     INNER JOIN Users ON Users.id = Comments.userID
+//     INNER JOIN Products ON Products.id = Comments.productID
+//   `;
 
-  CmsShopDB.query(query, (err, result) => {
+//   CmsShopDB.query(query, (err, result) => {
+//     if (err) {
+//       console.error("DB error in GET /comments:", err.message);
+//       return res
+//         .status(500)
+//         .json({ success: false, error: err.message, data: [] });
+//     }
+//     res.json({ success: true, data: result });
+//   });
+// });
+
+commentsRouter.get("/", (req, res) => {
+  let selectAllCommentsQuery = `SELECT comments.id, comments.isAccept, comments.body, comments.date, comments.hour, users.firsname as userID, products.title as productID FROM comments INNER JOIN users ON users.id = comments.userID INNER JOIN products ON products.id = comments.productID`;
+
+  CmsShopDB.query(selectAllCommentsQuery, (err, result) => {
     if (err) {
-      console.error("DB error in GET /comments:", err.message);
-      return res.status(500).json({ success: false, error: err.message, data: [] });
+      res.send(null);
+    } else {
+      res.send(result);
     }
-    res.json({ success: true, data: result });
   });
 });
 
@@ -52,7 +69,9 @@ commentsRouter.put(
     const { body } = req.body;
 
     if (!body || !body.trim()) {
-      return res.status(400).json({ success: false, error: "Comment body cannot be empty" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Comment body cannot be empty" });
     }
 
     const query = "UPDATE Comments SET body = ? WHERE id = ?";
