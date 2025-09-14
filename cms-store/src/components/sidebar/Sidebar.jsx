@@ -61,7 +61,7 @@ function Sidebar({ isOpen, onClose }) {
     >
       <div className="relative header-section-left flex justify-between w-full gap-x-3 items-center  border-zinc-500 px-5 pb-5">
         <img
-          src="../src/img/Peter.jpg"
+          src="/img/Peter.jpg"
           className="header-admin-img w-14 h-14 rounded-full"
         />
         <div className="header-admin-info ">
