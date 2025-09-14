@@ -8,7 +8,7 @@ This project includes real features like authentication, user roles, product and
 
 ## 🚀 Demo
 
-You can view the live project here: [Live Demo](https://your-demo-url.com)
+You can view the live project here: [Live Demo](https://cms-store-frontend-two.vercel.app/)
 
 
 ## ⚙️ Tech Stack
