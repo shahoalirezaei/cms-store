@@ -20,7 +20,7 @@ function NewUserJoinedTable({ details, isShowDetails }) {
 
   const getAllUsers = async () => {
     try {
-      await fetch("http://localhost:8001/api/users")
+      await fetch("api/users")
         .then(async (res) => {
           if (!res.ok) {
             throw new Error(`Server Error: ${res.status}`);

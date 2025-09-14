@@ -34,7 +34,7 @@ function Users() {
   }, []);
 
   const getAllUsers = async () => {
-    const { error, data } = await authFetch("http://localhost:8001/api/users");
+    const { error, data } = await authFetch("api/users");
     if (error) {
       console.error("Fetch error:", error);
     } else {

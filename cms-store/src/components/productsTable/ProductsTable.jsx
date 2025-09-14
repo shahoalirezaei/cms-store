@@ -64,7 +64,7 @@ function ProductsTable({ allProduct, getAllProduct }) {
     };
 
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/products/${productID}`,
+      `api/products/${productID}`,
       "PUT",
       newProductInfos
     );
@@ -82,60 +82,13 @@ function ProductsTable({ allProduct, getAllProduct }) {
         autoClose: 3000,
       });
     }
-
-    // fetch(`http://localhost:8001/api/products/${productID}`, {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(newProductInfos),
-    // })
-    //   .then(async (res) => {
-    //     if (!res.ok) {
-    //       throw new Error(`Server error: ${res.status}`);
-    //     }
-
-    //     const text = await res.text();
-    //     if (!text) {
-    //       return [];
-    //     }
-
-    //     return JSON.parse(text);
-    //   })
-    //   .then((result) => {
-    //     getAllProduct();
-
-    //     toast.success(`Success! Product is update`, {
-    //       position: "top-right",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: false,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //       theme: "light",
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     // console.error("Fetch error:", error);
-    //     toast.error("Error! product not update", {
-    //       position: "top-right",
-    //       autoClose: 3000,
-    //       hideProgressBar: false,
-    //       closeOnClick: false,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //       theme: "light",
-    //     });
-    //   });
     setIsShowEditModal(false);
   };
 
   const deleteModalSubmitAction = async () => {
     console.log("submit");
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/products/${productID}`,
+      `api/products/${productID}`,
       "DELETE"
     );
     if (error) {

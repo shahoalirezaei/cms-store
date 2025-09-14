@@ -28,7 +28,7 @@ function Orders() {
   }, []);
 
   const getAllOreders = async () => {
-    const { error, data } = await authFetch("http://localhost:8001/api/orders");
+    const { error, data } = await authFetch("api/orders");
     if (error) {
       console.error("Fetch error:", error);
     } else {
@@ -41,7 +41,7 @@ function Orders() {
     const isActiveNumber = isActive === true || isActive === "true" ? 1 : 0;
 
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/orders/active-order/${orderID}/${isActiveNumber}`,
+      `api/orders/active-order/${orderID}/${isActiveNumber}`,
       "PUT"
     );
     if (error) {
@@ -64,7 +64,7 @@ function Orders() {
     console.log("deleted");
 
     const { error, data } = await authFetch(
-      `http://localhost:8001/api/orders/${orderID}`,
+      `api/orders/${orderID}`,
       "DELETE"
     );
     if (error) {

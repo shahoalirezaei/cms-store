@@ -38,7 +38,7 @@ function Offs() {
   }, []);
 
   const getAllOffs = async () => {
-    const { error, data } = await authFetch("http://localhost:8001/api/offs");
+    const { error, data } = await authFetch("api/offs");
     if (error) {
       console.error("Fetch error:", error);
     } else {

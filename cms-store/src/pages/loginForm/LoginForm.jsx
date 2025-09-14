@@ -17,7 +17,7 @@ function LoginForm() {
     setError(null);
     
     const { data, error } = await authFetch(
-      "http://localhost:8001/api/auth/login",
+      "api/auth/login",
       "POST",
       { username, password }
     );

@@ -21,7 +21,7 @@ function MonthlySalesChart() {
   }, []);
   const getData = async () => {
     const { error, data } = await authFetch(
-      "http://localhost:8001/api/monthly-sales"
+      "api/monthly-sales"
     );
     if (error) {
       console.log(error);
