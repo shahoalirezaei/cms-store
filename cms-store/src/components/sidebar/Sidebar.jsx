@@ -13,7 +13,7 @@ import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
   const sidebarRef = useRef();
-  const [isAdmin, setIsAdmin] = useState("false");
+  const [isAdmin, setIsAdmin] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
