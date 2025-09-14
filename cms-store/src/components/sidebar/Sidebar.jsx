@@ -8,12 +8,13 @@ import { CiLogin, CiLogout } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
+import { useRef } from "react";
 
 import "./Sidebar.css";
 
 function Sidebar({ isOpen, onClose }) {
   const sidebarRef = useRef();
-  const [isAdmin, setIsAdmin] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,13 +37,24 @@ function Sidebar({ isOpen, onClose }) {
   }, [isOpen, onClose, isAdmin]);
 
   const checkIsAdmin = () => {
-    const user = localStorage.getItem("user");
-    if (user) {
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser); // convert string -> object
       if (user.role === "admin") {
         setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
       }
+    } catch (err) {
+      console.error("Invalid user data in localStorage", err);
+      setIsAdmin(false);
     }
-  };
+  } else {
+    setIsAdmin(false);
+  }
+};
+
   const redirectToLogIn = () => {
     navigate("/login");
   };
