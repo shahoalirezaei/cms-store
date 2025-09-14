@@ -8,7 +8,6 @@ import { CiLogin, CiLogout } from "react-icons/ci";
 import { IoSettingsOutline } from "react-icons/io5";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
-import { useRef } from "react";
 
 import "./Sidebar.css";
 
