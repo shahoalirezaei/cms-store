@@ -6,7 +6,7 @@ const productsRouter = express.Router();
 
 // GET همه محصولات بدون نیاز به احراز هویت
 productsRouter.get("/", (req, res) => {
-  const selectAllProductsQuery = `SELECT * FROM Products`;
+  const selectAllProductsQuery = `SELECT * FROM products`;
   CmsShopDB.query(selectAllProductsQuery, (err, result) => {
     if (err) {
       console.error(err);
@@ -32,7 +32,7 @@ productsRouter.post("/", authenticate, authorizeRole(["admin"]), (req, res) => {
   } = req.body;
 
   const insertQuery = `
-    INSERT INTO Products
+    INSERT INTO products
       (title, price, count, img, popularity, sale, colors, url, productDesc, categoryID)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
@@ -72,7 +72,7 @@ productsRouter.put("/:productID", authenticate, authorizeRole(["admin"]), (req, 
   } = req.body;
 
   const updateProductQuery = `
-    UPDATE Products SET 
+    UPDATE products SET 
       title = ?, 
       price = ?, 
       count = ?, 
@@ -96,7 +96,7 @@ productsRouter.put("/:productID", authenticate, authorizeRole(["admin"]), (req, 
 // DELETE حذف محصول - فقط ادمین
 productsRouter.delete("/:productID", authenticate, authorizeRole(["admin"]), (req, res) => {
   const productID = req.params.productID;
-  const deleteProductQuery = `DELETE FROM Products WHERE id = ?`;
+  const deleteProductQuery = `DELETE FROM products WHERE id = ?`;
 
   CmsShopDB.query(deleteProductQuery, [productID], (err, result) => {
     if (err) {

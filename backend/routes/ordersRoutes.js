@@ -9,12 +9,12 @@ const ordersRouter = express.Router();
 ordersRouter.get("/", (req, res) => {
   const selectAllOrdersQuery = `
     SELECT 
-      Orders.id, Orders.date, Orders.hour, Orders.price, Orders.off, Orders.sale, 
-      Orders.popularity, Orders.count, Orders.sale_count, Orders.isActive, 
-      Users.firsname as userID, Products.title as productID 
-    FROM Orders 
-    INNER JOIN Users ON Users.id = Orders.userID 
-    INNER JOIN Products ON Products.id = Orders.productID
+      orders.id, orders.date, orders.hour, orders.price, orders.off, orders.sale, 
+      orders.popularity, orders.count, orders.sale_count, orders.isActive, 
+      users.firsname as userID, products.title as productID 
+    FROM orders 
+    INNER JOIN users ON users.id = orders.userID 
+    INNER JOIN products ON products.id = orders.productID
   `;
 
   CmsShopDB.query(selectAllOrdersQuery, (err, result) => {
@@ -29,7 +29,7 @@ ordersRouter.get("/", (req, res) => {
 // DELETE order (فقط ادمین)
 ordersRouter.delete("/:orderID", authenticate, authorizeRole(['admin']), (req, res) => {
   const orderID = req.params.orderID;
-  const deleteOrderQuery = `DELETE FROM Orders WHERE id = ?`;
+  const deleteOrderQuery = `DELETE FROM orders WHERE id = ?`;
 
   CmsShopDB.query(deleteOrderQuery, [orderID], (err, result) => {
     if (err) {
@@ -51,7 +51,7 @@ ordersRouter.put("/active-order/:orderID/:isActive", authenticate, authorizeRole
   // console.log("Parsed values →", { orderID, isActive });
   
 
-  const activeOrderQuery = `UPDATE Orders SET isActive = ? WHERE id = ?`;
+  const activeOrderQuery = `UPDATE orders SET isActive = ? WHERE id = ?`;
 
   CmsShopDB.query(activeOrderQuery, [isActive, orderID], (err, result) => {
     if (err) {

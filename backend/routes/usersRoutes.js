@@ -6,7 +6,7 @@ const usersRouter = express.Router();
 
 // GET همه کاربران بدون احراز هویت
 usersRouter.get("/", (req, res) => {
-  let selectAllUsersQuery = `SELECT * FROM Users`;
+  let selectAllUsersQuery = `SELECT * FROM users`;
 
   CmsShopDB.query(selectAllUsersQuery, (err, result) => {
     if (err) {
@@ -21,7 +21,7 @@ usersRouter.get("/", (req, res) => {
 usersRouter.delete("/:userID", authenticate, authorizeRole(["admin"]), (req, res) => {
   let userID = req.params.userID;
 
-  let deleteUserQuery = `DELETE FROM Users WHERE id = ${userID}`;
+  let deleteUserQuery = `DELETE FROM users WHERE id = ${userID}`;
 
   CmsShopDB.query(deleteUserQuery, (err, result) => {
     if (err) {
@@ -37,7 +37,7 @@ usersRouter.put("/:userID", authenticate, authorizeRole(["admin"]), (req, res) =
   let userID = req.params.userID;
   let body = req.body;
 
-  let editUserQuery = `UPDATE Users SET firsname="${body.firsname}", lastname="${body.lastname}", username="${body.username}", password="${body.password}", phone=${body.phone}, city="${body.city}", email="${body.email}", address="${body.address}" ,score=${body.score}, buy=${body.buy}, img="${body.img}" WHERE id = ${userID}`;
+  let editUserQuery = `UPDATE users SET firsname="${body.firsname}", lastname="${body.lastname}", username="${body.username}", password="${body.password}", phone=${body.phone}, city="${body.city}", email="${body.email}", address="${body.address}" ,score=${body.score}, buy=${body.buy}, img="${body.img}" WHERE id = ${userID}`;
 
   CmsShopDB.query(editUserQuery, (err, result) => {
     if (err) {

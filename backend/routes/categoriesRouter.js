@@ -6,7 +6,7 @@ const categoriesRouter = express.Router();
 
 // GET all categories - open for all (public)
 categoriesRouter.get("/", (req, res) => {
-  const selectAllCategoriesQuery = `SELECT * FROM Categories`;
+  const selectAllCategoriesQuery = `SELECT * FROM categories`;
 
   CmsShopDB.query(selectAllCategoriesQuery, (err, result) => {
     if (err) {
