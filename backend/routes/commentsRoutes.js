@@ -1,77 +1,107 @@
-// routes/commentsRoutes.js
 const express = require("express");
-const CmsShopDB = require("./../db/CmsShop");
+const CmsShopDB = require("../db/CmsShop");
 const { authenticate, authorizeRole } = require("../middlewares/authMiddleware");
 
 const commentsRouter = express.Router();
 
-// GET همه میتونن ببینن، بدون auth
+// ---------------------- GET all comments (public) ----------------------
 commentsRouter.get("/", (req, res) => {
-  let selectAllCommentsQuery = `SELECT Comments.id, Comments.isAccept , Comments.body, Comments.date, Comments.hour, Users.firsname as userID, Products.title as productID FROM Comments INNER JOIN Users ON Users.id = Comments.userID INNER JOIN Products ON Products.id = Comments.productID`;
+  const query = `
+    SELECT Comments.id, Comments.isAccept, Comments.body, Comments.date, Comments.hour,
+           Users.firstname AS userID, Products.title AS productID
+    FROM Comments
+    INNER JOIN Users ON Users.id = Comments.userID
+    INNER JOIN Products ON Products.id = Comments.productID
+  `;
 
-  CmsShopDB.query(selectAllCommentsQuery, (err, result) => {
+  CmsShopDB.query(query, (err, result) => {
     if (err) {
-      res.send(null);
-    } else {
-      res.send(result);
+      console.error("DB error in GET /comments:", err.message);
+      return res.status(500).json({ success: false, error: err.message, data: [] });
     }
+    res.json({ success: true, data: result });
   });
 });
 
-// فقط ادمین اجازه داره حذف کنه
-commentsRouter.delete("/:commentID", authenticate, authorizeRole(["admin"]), (req, res) => {
-  let commentID = req.params.commentID;
+// ---------------------- DELETE comment (admin only) ----------------------
+commentsRouter.delete(
+  "/:commentID",
+  authenticate,
+  authorizeRole(["admin"]),
+  (req, res) => {
+    const commentID = req.params.commentID;
+    const query = "DELETE FROM Comments WHERE id = ?";
 
-  let deleteCommentQuery = `DELETE FROM Comments WHERE id = ${commentID}`;
-  CmsShopDB.query(deleteCommentQuery, (err, result) => {
-    if (err) {
-      res.send(null);
-    } else {
-      res.send(result);
+    CmsShopDB.query(query, [commentID], (err, result) => {
+      if (err) {
+        console.error("DB error in DELETE /comments:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
+      }
+      res.json({ success: true, data: result });
+    });
+  }
+);
+
+// ---------------------- UPDATE comment (admin only) ----------------------
+commentsRouter.put(
+  "/:commentID",
+  authenticate,
+  authorizeRole(["admin"]),
+  (req, res) => {
+    const commentID = req.params.commentID;
+    const { body } = req.body;
+
+    if (!body || !body.trim()) {
+      return res.status(400).json({ success: false, error: "Comment body cannot be empty" });
     }
-  });
-});
 
-// فقط ادمین اجازه داره ویرایش کنه
-commentsRouter.put("/:commentID", authenticate, authorizeRole(["admin"]), (req, res) => {
-  let commentID = req.params.commentID;
-  let editCommentQuery = `UPDATE Comments SET body="${req.body.body}" WHERE id = ${commentID}`;
+    const query = "UPDATE Comments SET body = ? WHERE id = ?";
+    CmsShopDB.query(query, [body, commentID], (err, result) => {
+      if (err) {
+        console.error("DB error in PUT /comments:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
+      }
+      res.json({ success: true, data: result });
+    });
+  }
+);
 
-  CmsShopDB.query(editCommentQuery, (err, result) => {
-    if (err) {
-      res.send(null);
-    } else {
-      res.send(result);
-    }
-  });
-});
+// ---------------------- ACCEPT comment (admin only) ----------------------
+commentsRouter.post(
+  "/accept/:commentID",
+  authenticate,
+  authorizeRole(["admin"]),
+  (req, res) => {
+    const commentID = req.params.commentID;
+    const query = "UPDATE Comments SET isAccept = 1 WHERE id = ?";
 
-// فقط ادمین اجازه داره تایید کنه
-commentsRouter.post("/accept/:commentID", authenticate, authorizeRole(["admin"]), (req, res) => {
-  let commentID = req.params.commentID;
-  let editCommentQuery = `UPDATE Comments SET isAccept = 1 WHERE id = ${commentID}`;
+    CmsShopDB.query(query, [commentID], (err, result) => {
+      if (err) {
+        console.error("DB error in POST /comments/accept:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
+      }
+      res.json({ success: true, data: result });
+    });
+  }
+);
 
-  CmsShopDB.query(editCommentQuery, (err, result) => {
-    if (err) {
-      res.send(null);
-    } else {
-      res.send(result);
-    }
-  });
-});
+// ---------------------- REJECT comment (admin only) ----------------------
+commentsRouter.post(
+  "/reject/:commentID",
+  authenticate,
+  authorizeRole(["admin"]),
+  (req, res) => {
+    const commentID = req.params.commentID;
+    const query = "UPDATE Comments SET isAccept = 0 WHERE id = ?";
 
-// فقط ادمین اجازه داره رد کنه
-commentsRouter.post("/reject/:commentID", authenticate, authorizeRole(["admin"]), (req, res) => {
-  let commentID = req.params.commentID;
-  let editCommentQuery = `UPDATE Comments SET isAccept = 0 WHERE id = ${commentID}`;
-
-  CmsShopDB.query(editCommentQuery, (err, result) => {
-    if (err) {
-      res.send(null);
-    } else {
-      res.send(result);
-    }
-  });
-});
+    CmsShopDB.query(query, [commentID], (err, result) => {
+      if (err) {
+        console.error("DB error in POST /comments/reject:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
+      }
+      res.json({ success: true, data: result });
+    });
+  }
+);
 
 module.exports = commentsRouter;
