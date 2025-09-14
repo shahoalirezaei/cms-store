@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ErrorBox from "../errorBox/ErrorBox";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
 import {
   FaEdit,
   FaInfoCircle,
@@ -12,30 +13,18 @@ import {
 
 function NewUserJoinedTable({ details, isShowDetails }) {
   const [allUsers, setAllUsers] = useState([]);
-//   const [isShowDetailsModal, setIsShowDetailsModal] = useState(false);
+  const { authFetch } = useAuthFetch();
  
   useEffect(() => {
     getAllUsers();
   }, []);
 
   const getAllUsers = async () => {
-    try {
-      await fetch("api/users")
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error(`Server Error: ${res.status}`);
-          }
-          const text = await res.text();
-          if (!text) {
-            return [];
-          }
-          return JSON.parse(text);
-        })
-        .then((data) => {
-          setAllUsers(data);
-        });
-    } catch (error) {
-      // console.log(`Fetch error: ${error}`);
+    const { error, data } = await authFetch("api/users");
+    if(error){
+      console.log("ERROR: " + error);
+    }else {
+      setAllUsers(data)
     }
   };
   return (

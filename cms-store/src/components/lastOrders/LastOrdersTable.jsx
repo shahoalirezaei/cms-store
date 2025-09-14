@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ErrorBox from "../errorBox/ErrorBox";
+import { useAuthFetch } from "../../hooks/useAuthFetch";
 import {
   FaEdit,
   FaInfoCircle,
@@ -12,32 +13,18 @@ import {
 
 function LastOrdersTable() {
   const [lastOrders, setLastOrders] = useState([]);
+  const { authFetch } = useAuthFetch();
 
   useEffect(() => {
     getLastOreders();
   }, []);
 
   const getLastOreders = async () => {
-    try {
-      await fetch("http://localhost:8001/api/orders")
-        .then(async (res) => {
-          if (!res.ok) {
-            throw new Error(`Server Error: ${res.status}`);
-          }
-          const text = await res.text();
-          if (!text) {
-            return [];
-          }
-          return JSON.parse(text);
-        })
-        .then((data) => {
-          const sortedData = data.sort(
-            (a, b) => new Date(b.date) - new Date(a.date)
-          );
-          setLastOrders(sortedData);
-        });
-    } catch (error) {
-      console.log(`Fetch error: ${error}`);
+    const { error, data } = await authFetch("api/orders");
+    if(error){
+      console.log("ERROR: " + error);
+    }else {
+      setLastOrders(data)
     }
   };
 
