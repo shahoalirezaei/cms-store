@@ -15,7 +15,7 @@ function Products() {
 
   const getAllProduct = async () => {
     const { error, data } = await authFetch(
-      "http://localhost:8001/api/products"
+      "api/products"
     );
 
     if (error) {

@@ -19,7 +19,7 @@ function AddNewProduct({ getAllProduct }) {
 
   const getCategories = async () => {
     try {
-      await fetch("http://localhost:8001/api/categories")
+      await fetch("/api/categories")
         .then(async (res) => {
           // console.log(res);
 
