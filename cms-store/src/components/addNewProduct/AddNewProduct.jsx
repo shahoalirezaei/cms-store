@@ -269,7 +269,7 @@ function AddNewProduct({ getAllProduct }) {
           </div>
         </div>
         <button
-        type="button"
+          type="button"
           className="btn-blue w-3/4 sm:w-3/5 md:w-auto"
           onClick={createNewProduct}
         >
