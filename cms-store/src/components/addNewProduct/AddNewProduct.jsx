@@ -20,7 +20,7 @@ function AddNewProduct({ getAllProduct }) {
 
   const getCategories = async () => {
     try {
-      const res = await fetch("http://localhost:8001/api/categories");
+      const res = await fetch("api/categories");
       if (!res.ok) throw new Error(`Server Error: ${res.status}`);
       const data = await res.json();
       setCategories(data || []);
@@ -66,7 +66,7 @@ function AddNewProduct({ getAllProduct }) {
     };
 
     const { error, data } = await authFetch(
-      "http://localhost:8001/api/products",
+      "api/products",
       "POST",
       newProduct
     );
