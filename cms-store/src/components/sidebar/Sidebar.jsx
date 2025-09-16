@@ -66,7 +66,7 @@ function Sidebar({ isOpen, onClose }) {
   return (
     <div
       ref={sidebarRef}
-      className={`z-10  fixed bg-zinc-300 w-65 sm:w-70  pt-6 text-xl border-l-2 h-[100vh] transition-all duration-300 overflow-y-auto scrollbar-custom ${
+      className={`z-51  fixed bg-zinc-300 w-65 sm:w-70  pt-6 text-xl border-l-2 h-[100vh] transition-all duration-300 overflow-y-auto scrollbar-custom ${
         isOpen ? "left-0" : "-left-72"
       } md:!left-0`}
     >

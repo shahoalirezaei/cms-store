@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAuthFetch } from "../../hooks/useAuthFetch";
+import { IoMdAttach } from "react-icons/io";
 
 function AddNewProduct({ getAllProduct }) {
   const { authFetch } = useAuthFetch();
@@ -13,13 +14,15 @@ function AddNewProduct({ getAllProduct }) {
   const [newProductDesc, setNewProductDesc] = useState("");
   const [selectedCategoryID, setSelectedCategoryID] = useState("");
 
+  const [imgError, setImgError] = useState("");
+
   useEffect(() => {
     getCategories();
   }, []);
 
   const getCategories = async () => {
     try {
-      await fetch("/api/categories")
+      await fetch("http://localhost:8001/api/categories")
         .then(async (res) => {
           // console.log(res);
 
@@ -49,6 +52,22 @@ function AddNewProduct({ getAllProduct }) {
       .toLowerCase();
   };
 
+  const handleImageUpload = (event, setNewProductImg, setImgError) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    // 2MB size limit
+    const MAX_SIZE = 2 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      setImgError("File size must be less than 2MB");
+      event.target.value = null;
+      return;
+    }
+    setImgError("");
+    setNewProductImg(file);
+  };
+
   const createNewProduct = async (event) => {
     event.preventDefault();
 
@@ -68,38 +87,71 @@ function AddNewProduct({ getAllProduct }) {
       return;
     }
 
-    // Construct new product object
-    const newProduct = {
-      title: newProductTitle,
-      price: newProductPrice,
-      count: newProductCount,
-      img: newProductImg,
-      popularity: 100,
-      sale: 0,
-      colors: newProductColors,
-      url: createSlugUrl(newProductTitle),
-      productDesc: newProductDesc,
-      categoryID: selectedCategoryID,
-    };
+    // Upload image to Cloudinary
+    try {
+      const formData = new FormData();
 
-    // Send request to backend
-    const { error, data } = await authFetch(
-      "http://localhost:8001/api/products",
-      "POST",
-      newProduct
-    );
+      formData.append("file", newProductImg);
+      formData.append("upload_preset", "products_unsigned_preset"); // perset name
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dimj5vpdf/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
-    // Handle response
-    if (error) {
-      toast.error("Error! product not creat", {
-        position: "bottom-left",
-        autoClose: 3000,
-      });
-    } else {
-      console.log(data);
-      getAllProduct();
-      emptyInputs();
-      toast.success("Success! product created", {
+      const data = await res.json();
+
+      if (!data.secure_url) {
+        toast.error("Image upload failed. Please try again.", {
+          position: "bottom-left",
+          autoClose: 3000,
+        });
+        return;
+      }
+
+      const uploadedImageUrl = data.secure_url;
+
+      // Construct new product object
+      const newProduct = {
+        title: newProductTitle,
+        price: newProductPrice,
+        count: newProductCount,
+        img: uploadedImageUrl,
+        popularity: 100,
+        sale: 0,
+        colors: newProductColors,
+        url: createSlugUrl(newProductTitle),
+        productDesc: newProductDesc,
+        categoryID: selectedCategoryID,
+      };
+
+      // Send request to backend
+      const { error, data: savedProduct } = await authFetch(
+        "http://localhost:8001/api/products",
+        "POST",
+        newProduct
+      );
+
+      // Handle response
+      if (error) {
+        toast.error("Error! product not creat", {
+          position: "bottom-left",
+          autoClose: 3000,
+        });
+      } else {
+        console.log(savedProduct);
+        getAllProduct();
+        emptyInputs();
+        toast.success("Success! product created", {
+          position: "bottom-left",
+          autoClose: 3000,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Image upload failed", {
         position: "bottom-left",
         autoClose: 3000,
       });
@@ -150,15 +202,7 @@ function AddNewProduct({ getAllProduct }) {
               onChange={(e) => setNewProductCount(e.target.value)}
             />
           </div>
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <input
-              type="text"
-              placeholder="Product image addres"
-              className="bg-inherit outline-0  border-0 w-full px-2 py-2.5 text-base"
-              value={newProductImg}
-              onChange={(e) => setNewProductImg(e.target.value)}
-            />
-          </div>
+
           <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
             <input
               type="text"
@@ -189,6 +233,31 @@ function AddNewProduct({ getAllProduct }) {
               )}
             </select>
           </div>
+          <div>
+            <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
+              <label
+                htmlFor="productImg"
+                className="flex gap-x-2 items-center cursor-pointer px-4 py-2 rounded-md text-gray-400"
+              >
+                <IoMdAttach />
+                Attach product image
+              </label>
+              <input
+                id="productImg"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) =>
+                  handleImageUpload(e, setNewProductImg, setImgError)
+                }
+              />
+            </div>
+            {imgError && (
+              <p className=" text-center text-red-500 text-sm mt-1">
+                {imgError}
+              </p>
+            )}
+          </div>
           <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
             <textarea
               type="text"
@@ -200,6 +269,7 @@ function AddNewProduct({ getAllProduct }) {
           </div>
         </div>
         <button
+        type="button"
           className="btn-blue w-3/4 sm:w-3/5 md:w-auto"
           onClick={createNewProduct}
         >
