@@ -20,7 +20,7 @@ function AddNewProduct({ getAllProduct }) {
 
   const getCategories = async () => {
     try {
-      const res = await fetch("api/categories");
+      const res = await fetch("http://localhost:8001/api/categories");
       if (!res.ok) throw new Error(`Server Error: ${res.status}`);
       const data = await res.json();
       setCategories(data || []);
@@ -65,8 +65,8 @@ function AddNewProduct({ getAllProduct }) {
       categoryID: selectedCategoryID,
     };
 
-    const { error, data } = await authFetch(
-      "api/products",
+    const { error, data: savedProduct } = await authFetch(
+      "http://localhost:8001/api/products",
       "POST",
       newProduct
     );
@@ -94,78 +94,90 @@ function AddNewProduct({ getAllProduct }) {
     <div className="mt-8 md:mt-10 lg:mt-14">
       <h3 className="table-title">Add new product</h3>
       <form className="flex flex-col mt-3 md:mt-5 bg-white items-center md:items-end p-3 md:p-5 rounded-2xl gap-y-4">
-        <div className="wrapper w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2.5">
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <input
-              type="text"
-              placeholder="Product title"
-              className="bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={newProductTitle}
-              onChange={(e) => setNewProductTitle(e.target.value)}
-            />
-          </div>
+       <div className="wrapper w-full grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3">
+  {/* Product Title */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Product Title</label>
+    <input
+      type="text"
+      placeholder="Enter product title"
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none"
+      value={newProductTitle}
+      onChange={(e) => setNewProductTitle(e.target.value)}
+    />
+  </div>
 
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <input
-              type="text"
-              placeholder="Product price"
-              className="bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={newProductPrice}
-              onChange={(e) => setNewProductPrice(e.target.value)}
-            />
-          </div>
+  {/* Product Price */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Product Price</label>
+    <input
+      type="text"
+      placeholder="Enter product price"
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none"
+      value={newProductPrice}
+      onChange={(e) => setNewProductPrice(e.target.value)}
+    />
+  </div>
 
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <input
-              type="text"
-              placeholder="Product count"
-              className="bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={newProductCount}
-              onChange={(e) => setNewProductCount(e.target.value)}
-            />
-          </div>
+  {/* Product Count */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Product Count</label>
+    <input
+      type="text"
+      placeholder="Enter product count"
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none"
+      value={newProductCount}
+      onChange={(e) => setNewProductCount(e.target.value)}
+    />
+  </div>
 
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <input
-              type="text"
-              placeholder="Product number of colors"
-              className="bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={newProductColors}
-              onChange={(e) => setNewProductColors(e.target.value)}
-            />
-          </div>
+  {/* Product Colors */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Number of Colors</label>
+    <input
+      type="text"
+      placeholder="Enter number of colors"
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none"
+      value={newProductColors}
+      onChange={(e) => setNewProductColors(e.target.value)}
+    />
+  </div>
 
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <select
-              className="flex justify-between bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={selectedCategoryID}
-              onChange={(e) => setSelectedCategoryID(e.target.value)}
-            >
-              <option value="" disabled>
-                Select category
-              </option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.title}
-                </option>
-              ))}
-            </select>
-          </div>
+  {/* Category Select */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Category</label>
+    <select
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none"
+      value={selectedCategoryID}
+      onChange={(e) => setSelectedCategoryID(e.target.value)}
+    >
+      <option value="">Select category</option>
+      {categories.map((cat) => (
+        <option key={cat.id} value={cat.id}>{cat.title}</option>
+      ))}
+    </select>
+  </div>
 
-          {/*  ImageUploader Component */}
-          <div className="input-wrapper h-[45px] w-full flex flex-col items-center bg-[#f0f0f0] px-5 rounded-xl overflow-hidden">
-            <ImageUploader onUploadSuccess={(url) => setNewProductImg(url)} />
-          </div>
+  {/* Image Uploader */}
+  <div className="flex flex-col">
+    <label className="text-sm font-medium mb-1">Product Image</label>
+    <div className="h-[50px] flex items-center">
+      <ImageUploader onUploadSuccess={(url) => setNewProductImg(url)} />
+    </div>
+  </div>
 
-          <div className="input-wrapper w-full flex items-center bg-[#f0f0f0] px-5 rounded-xl">
-            <textarea
-              placeholder="Product description ..."
-              className="bg-inherit outline-0 border-0 w-full px-2 py-2.5 text-base"
-              value={newProductDesc}
-              onChange={(e) => setNewProductDesc(e.target.value)}
-            ></textarea>
-          </div>
-        </div>
+  {/* Product Description */}
+  <div className="flex flex-col md:col-span-2">
+    <label className="text-sm font-medium mb-1">Description</label>
+    <textarea
+      placeholder="Enter product description..."
+      className="bg-[#f0f0f0] rounded-xl px-3 py-2 outline-none w-full"
+      value={newProductDesc}
+      onChange={(e) => setNewProductDesc(e.target.value)}
+    ></textarea>
+  </div>
+</div>
+
 
         <button
           type="submit"
