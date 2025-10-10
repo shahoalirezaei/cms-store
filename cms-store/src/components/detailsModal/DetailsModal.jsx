@@ -25,7 +25,7 @@ function DetailsModal({ onHide, children }) {
 
   return ReactDOM.createPortal(
     <div
-      className="modal-parent"
+      className="modal-parent z-52"
       onClick={handleOverlayClick}
     >
       <div
